@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "KIRA Café & Bistro"
+version = "1.0.0"
+id = "artifacts/kira-cafe"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20661
+
+[services.development]
+run = "pnpm --filter @workspace/kira-cafe run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/kira-cafe", "run", "build" ]
+publicDir = "artifacts/kira-cafe/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20661"
+BASE_PATH = "/"
