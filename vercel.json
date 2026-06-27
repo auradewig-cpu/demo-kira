@@ -1,7 +1,6 @@
 {
-  "rootDirectory": "artifacts/kira-cafe",
-  "buildCommand": "pnpm run build",
+  "buildCommand": "cd artifacts/kira-cafe && pnpm exec vite build --config vite.config.ts",
   "installCommand": "pnpm install",
-  "outputDirectory": "dist/public",
+  "outputDirectory": "artifacts/kira-cafe/dist/public",
   "framework": "vite"
 }
