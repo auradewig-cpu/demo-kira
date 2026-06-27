@@ -235,7 +235,6 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-    animation: fadeIn 0.2s ease;
   }
 
   .modal-box {
@@ -246,19 +245,12 @@
     max-width: 520px;
     max-height: 90vh;
     overflow-y: auto;
-    animation: slideUp 0.3s ease;
     position: relative;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
 
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+
+
 
   .form-input {
     width: 100%;
@@ -387,14 +379,10 @@
     align-items: center;
     gap: 8px;
     color: rgba(253, 248, 247, 0.7);
-    animation: bounce 2s infinite;
     cursor: pointer;
   }
 
-  @keyframes bounce {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(8px); }
-  }
+
 
   .tag-badge {
     display: inline-flex;
@@ -422,4 +410,22 @@
     transform: translateY(-3px);
     box-shadow: 0 12px 32px -8px rgba(44, 24, 16, 0.12);
   }
+}
+
+/* GSAP animation hooks */
+.gsap-hero-title,
+.gsap-hero-subtitle,
+.gsap-hero-cta,
+.gsap-scroll-indicator,
+.gsap-section-heading,
+.gsap-menu-card,
+.gsap-gallery-img,
+.gsap-info-card,
+.gsap-lokasi-item,
+.gsap-lokasi-map,
+.gsap-kisah-img,
+.gsap-kisah-text,
+.gsap-kisah-stat,
+.gsap-cta-content {
+  will-change: transform, opacity;
 }

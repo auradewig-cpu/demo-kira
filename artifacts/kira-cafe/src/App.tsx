@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { animateHero, animateMenu, animateSuasana, animateInfoCards, animateLokasi, animateKisah, animateCta, animateParallaxHero, animateNavbar, animateModalOpen, animateModalClose } from "./lib/animations";
+import { useGsapCleanup } from "./hooks/useGsapAnimation";
 
 const IMAGES = {
   hero: "https://lh3.googleusercontent.com/aida-public/AB6AXuCNSJgMjRoQf9YvrEc-6p63LU7zyaHbecTP1PA2Bq0XFZUKIoepGU_vqM1Btai0EtoxhJsLEFWM7QHtjE9d5zF4F4eNpi7lzOGn2DGenhXxD9aAaIDDLm37OECvo6ue803Yi0faNPLeGIXtfbez4mIkrc8zsB_eC5QJEeRUfehwLCFkFxn7U4upzizQ_byfdO_PAsM4lzgzHhO9d9FWJODN4lAQTqtgPBGwjh5KRXNxRyciJcMZdveXpswEcLXBrt_NEDsYTAlwBcB4",
@@ -39,6 +41,18 @@ function ReservasiModal({ onClose }: { onClose: () => void }) {
     catatan: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (modalRef.current) {
+      animateModalOpen(modalRef.current);
+    }
+    return () => {
+      if (modalRef.current) {
+        animateModalClose(modalRef.current);
+      }
+    };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,8 +63,8 @@ function ReservasiModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal-box">
+    <div ref={modalRef} className="modal-overlay gsap-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="modal-box gsap-modal-box">
         <button
           onClick={onClose}
           style={{
@@ -99,7 +113,7 @@ function ReservasiModal({ onClose }: { onClose: () => void }) {
             <p style={{ color: "#7b766e", fontSize: 15, marginBottom: 28 }}>
               Pesan mejamu sekarang dan nikmati pengalaman KIRA yang tak terlupakan.
             </p>
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            <form className="gsap-modal-field" onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
               <div>
                 <label className="form-label">Nama Lengkap</label>
                 <input
@@ -225,7 +239,7 @@ const menuItems = [
 function MenuCard({ item, onOrder }: { item: typeof menuItems[0]; onOrder: () => void }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div className="menu-card" onClick={() => setExpanded(!expanded)}>
+    <div className="menu-card gsap-menu-card" onClick={() => setExpanded(!expanded)}>
       <div style={{ position: "relative", height: 256, overflow: "hidden" }}>
         <img className="card-img" src={item.img} alt={item.name} />
         <div style={{
@@ -280,6 +294,27 @@ export default function App() {
     setToast({ visible: true, message });
     toastTimer.current = setTimeout(() => setToast({ visible: false, message: "" }), 2500);
   };
+
+  useGsapCleanup();
+
+  useEffect(() => {
+    const tl = animateHero();
+    animateMenu();
+    animateSuasana();
+    animateInfoCards();
+    animateLokasi();
+    animateKisah();
+    animateCta();
+    animateParallaxHero();
+    animateNavbar();
+    return () => { tl.kill(); };
+  }, []);
+
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", handler);
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
 
   const handleNavClick = (section: string) => {
     setMobileMenuOpen(false);
@@ -341,7 +376,7 @@ export default function App() {
       </div>
 
       {/* Navbar */}
-      <header style={{
+      <header className="gsap-navbar" style={{
         background: scrolled ? "rgba(28, 27, 27, 0.97)" : "rgba(28, 27, 27, 0.90)",
         backdropFilter: "blur(20px)",
         boxShadow: scrolled ? "0 2px 20px rgba(0,0,0,0.15)" : "none",
@@ -414,8 +449,8 @@ export default function App() {
       </header>
 
       {/* Hero Section */}
-      <section style={{ position: "relative", height: "100vh", minHeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+      <section id="hero" style={{ position: "relative", height: "100vh", minHeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div className="gsap-hero-bg" style={{ position: "absolute", inset: 0, zIndex: 0 }}>
           <img
             src={IMAGES.hero}
             alt="KIRA Café interior"
@@ -438,7 +473,7 @@ export default function App() {
             Yogyakarta · Jl. Prawirotaman
           </div>
           <h1
-            className="font-playfair"
+            className="font-playfair gsap-hero-title"
             style={{
               fontSize: "clamp(36px, 5vw, 56px)",
               lineHeight: "1.15",
@@ -450,7 +485,7 @@ export default function App() {
           >
             Tempat di Mana<br />Setiap Tegukan Punya Cerita
           </h1>
-          <p style={{
+          <p className="gsap-hero-subtitle" style={{
             fontFamily: "Inter",
             fontSize: "clamp(16px, 2vw, 18px)",
             lineHeight: 1.7,
@@ -460,7 +495,7 @@ export default function App() {
           }}>
             Nikmati perpaduan harmoni kopi specialty dan hidangan artisan dalam suasana hangat khas Nordik di jantung Yogyakarta.
           </p>
-          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
+          <div className="gsap-hero-cta" style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
             <a
               className="btn-outline"
               href="#menu"
@@ -477,7 +512,7 @@ export default function App() {
           </div>
         </div>
         <button
-          className="scroll-indicator"
+          className="scroll-indicator gsap-scroll-indicator"
           onClick={() => scrollToSection("menu")}
           aria-label="Scroll ke bawah"
         >
@@ -491,7 +526,7 @@ export default function App() {
       {/* Menu Section */}
       <section id="menu" style={{ padding: "96px 20px", maxWidth: 1200, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 64 }}>
-          <p style={{ fontFamily: "Inter", fontSize: 13, fontWeight: 600, color: "#44664a", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 12 }}>Pilihan Terbaik</p>
+          <p className="gsap-section-heading" style={{ fontFamily: "Inter", fontSize: 13, fontWeight: 600, color: "#44664a", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 12 }}>Pilihan Terbaik</p>
           <h2 className="section-title">Cita Rasa Pilihan</h2>
           <div className="section-divider" />
           <p style={{ fontFamily: "Inter", fontSize: 16, color: "#7b766e", marginTop: 20, maxWidth: 480, margin: "20px auto 0" }}>
@@ -526,13 +561,13 @@ export default function App() {
             </p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gridTemplateRows: "auto", gap: 16 }}>
-            <div className="atmosphere-img" style={{ gridRow: "1 / 3", height: 480 }}>
+            <div className="atmosphere-img gsap-gallery-img" style={{ gridRow: "1 / 3", height: 480 }}>
               <img src={IMAGES.suasana1} alt="Suasana KIRA 1" />
             </div>
-            <div className="atmosphere-img" style={{ height: 228 }}>
+            <div className="atmosphere-img gsap-gallery-img" style={{ height: 228 }}>
               <img src={IMAGES.suasana2} alt="Suasana KIRA 2" />
             </div>
-            <div className="atmosphere-img" style={{ height: 228 }}>
+            <div className="atmosphere-img gsap-gallery-img" style={{ height: 228 }}>
               <img src={IMAGES.suasana3} alt="Suasana KIRA 3" />
             </div>
           </div>
@@ -542,7 +577,7 @@ export default function App() {
               { icon: "🌿", label: "Bahan Lokal", desc: "Bermitra dengan petani lokal Yogyakarta dan sekitarnya" },
               { icon: "🏡", label: "Suasana Nordik", desc: "Interior hangat dengan sentuhan kayu dan tanaman hijau" },
             ].map((f) => (
-              <div key={f.label} className="info-card" style={{ flex: "1 1 250px" }}>
+              <div key={f.label} className="info-card gsap-info-card" style={{ flex: "1 1 250px" }}>
                 <span style={{ fontSize: 32, display: "block", marginBottom: 12 }}>{f.icon}</span>
                 <h4 className="font-playfair" style={{ fontSize: 18, fontWeight: 600, color: "#1c1b1b", marginBottom: 8 }}>{f.label}</h4>
                 <p style={{ fontFamily: "Inter", fontSize: 14, color: "#7b766e", lineHeight: 1.6 }}>{f.desc}</p>
@@ -591,7 +626,7 @@ export default function App() {
                   content: "+62 812-3456-7890\nkira@kira.coffee",
                 },
               ].map((item) => (
-                <div key={item.title} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                <div key={item.title} className="gsap-lokasi-item" style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
                   <div style={{
                     width: 44,
                     height: 44,
@@ -630,7 +665,7 @@ export default function App() {
             </div>
           </div>
           <div>
-            <div style={{
+            <div className="gsap-lokasi-map" style={{
               borderRadius: 20,
               overflow: "hidden",
               border: "1px solid #e6e2e0",
@@ -654,7 +689,7 @@ export default function App() {
       {/* Kisah Section */}
       <section id="kisah" style={{ background: "#1c1b1b", padding: "96px 20px" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 64, alignItems: "center" }}>
-          <div style={{ borderRadius: 20, overflow: "hidden", boxShadow: "0 20px 60px -12px rgba(0,0,0,0.5)" }}>
+          <div className="gsap-kisah-img" style={{ borderRadius: 20, overflow: "hidden", boxShadow: "0 20px 60px -12px rgba(0,0,0,0.5)" }}>
             <img
               src={IMAGES.kisah}
               alt="Kisah KIRA"
@@ -666,7 +701,7 @@ export default function App() {
             <h2 className="font-playfair" style={{ fontSize: "clamp(28px, 3.5vw, 40px)", fontWeight: 700, color: "#fdf8f7", lineHeight: 1.2, marginBottom: 24 }}>
               Kisah di Balik<br />Setiap Cangkir
             </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 36 }}>
+            <div className="gsap-kisah-text" style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 36 }}>
               {[
                 "KIRA lahir dari kecintaan mendalam terhadap kopi dan kehangatan. Berdiri sejak 2019, kami percaya setiap cangkir kopi adalah kesempatan untuk menciptakan momen berharga.",
                 "Nama KIRA terinspirasi dari kata Jawa kuno yang berarti \"rasa\" — karena di sini, kami merayakan setiap rasa, dari pahitnya espresso hingga manisnya kenangan bersama.",
@@ -677,7 +712,7 @@ export default function App() {
                 </p>
               ))}
             </div>
-            <div style={{ display: "flex", gap: 32, marginBottom: 40 }}>
+            <div className="gsap-kisah-stat" style={{ display: "flex", gap: 32, marginBottom: 40 }}>
               {[
                 { num: "5+", label: "Tahun Berdiri" },
                 { num: "12k+", label: "Pelanggan Setia" },
@@ -700,7 +735,7 @@ export default function App() {
       </section>
 
       {/* Reservasi CTA Section */}
-      <section id="reservasi" style={{ background: "#44664a", padding: "80px 20px", textAlign: "center" }}>
+      <section id="reservasi" className="gsap-cta-content" style={{ background: "#44664a", padding: "80px 20px", textAlign: "center" }}>
         <div style={{ maxWidth: 640, margin: "0 auto" }}>
           <h2 className="font-playfair" style={{ fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 700, color: "#fdf8f7", marginBottom: 16 }}>
             Siap Mengunjungi KIRA?

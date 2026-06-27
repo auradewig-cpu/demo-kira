@@ -1,0 +1,7 @@
+{
+  "rootDirectory": "artifacts/kira-cafe",
+  "buildCommand": "pnpm run build",
+  "installCommand": "pnpm install",
+  "outputDirectory": "dist/public",
+  "framework": "vite"
+}
